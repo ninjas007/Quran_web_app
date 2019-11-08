@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		ul {
+			list-style: none;
+		}
+		.container {
+			width: 50%;
+			background-color: #cccccc;
+			padding: 20px;
+		}
+		strong {
+			color: blue;
+		}
+	</style>
+</head>
+<body>
+	<center>
+		<div class="container">
+			<a href="#" id="back"><< Back</a>
+			<a href="#" id="next">Next >></a>
+			<div class="content">
+				<!-- list quran -->
+			</div>
+			<a href="#" id="back"><< Back</a>
+			<a href="#" id="next">Next >></a>
+		</div>
+	</center>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+	<script>
+		
+		var surah = 1;
+
+		$('#back').click(function(e) {
+			e.preventDefault();
+			if ($('#surah').val() > 1) {
+				surah = surah - 1;
+				getData(surah);
+			} else {
+				alert('Ini surah paling awal')
+			}
+		});
+
+		$('#next').click(function(e) {
+			e.preventDefault();
+			surah = surah + 1;
+			getData(surah);
+		});
+		
+		getData(surah);
+
+		function getData(surah) {
+
+			$('.content').html('<p>Loading..</p>')
+			
+			$.ajax({
+				url: `https://al-quran-8d642.firebaseio.com/surat/${surah}.json?print=pretty`,
+				type: 'GET',
+				dataType: 'json',
+			})
+			.done(function(data) {
+				let output = `<h2>Surah Ke - ${surah}</h2>`;
+
+				$.map(data, function(item, index) {
+					output += `
+						<p style="font-size:25px">${item.ar}<p>
+						<p>${item.id}<p>
+						<p>${item.tr}<p>
+						<input type="hidden" id="surah" value="${surah}">
+						<hr>
+					`
+				})
+				
+				$('.content').html(output)
+			})
+			.fail(function() {
+				console.log("error");
+			})
+			.always(function() {
+				console.log("complete");
+			});
+		}
+		
+	</script>
+</body>
+</html>
